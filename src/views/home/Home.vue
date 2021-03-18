@@ -90,7 +90,7 @@ export default {
       }
     },
     backClick(){
-      this.$refs.scroll.scrollTo(0,0);
+      this.$refs.scroll && this.$refs.scroll.scrollTo(0,0);
     },
     contentScroll(position){
       this.isShowBackTop= (-position.y) > 1000
@@ -111,8 +111,8 @@ export default {
       getHomeGoods(type,page).then(res=>{
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page+=1;
-
-        this.$refs.scroll.finishPullUp();
+        // 完成上拉加载更多
+        this.$refs.scroll && this.$refs.scroll.finishPullUp();
       })
     }
   }
