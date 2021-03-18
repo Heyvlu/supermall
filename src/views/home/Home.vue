@@ -12,8 +12,9 @@
       <home-swiper :banners='banners'/>
       <recommend-view :recommends='recommends'/>
       <feature-view/>
-      <tab-control class="tab-control" :titles="['流行','新款','精选']"
-      @tabClick="tabClick"/>
+      <tab-control :titles="['流行','新款','精选']"
+                    @tabClick="tabClick" 
+                    ref="tabControl"/>
       <goods-list :goods="showGoods"/>
     </scroll>
 
@@ -57,7 +58,8 @@ export default {
         'sell':{page:0,list:[]}
       },
       currentType:'pop',
-      isShowBackTop:false
+      isShowBackTop:false,
+      tabOffsetTop:0
     }
   },
   computed:{
@@ -73,6 +75,10 @@ export default {
     this.getHomeGoods('pop'),
     this.getHomeGoods('new'),
     this.getHomeGoods('sell')
+  },
+  mounted(){
+    // 获取tabControl的offsetTop
+    console.log(this.$refs.tabControl.$el.offsetTop);
   },
   methods:{
     // 事件监听相关的方法
@@ -133,12 +139,6 @@ export default {
     left: 0;
     right: 0;
     top: 0;
-    z-index: 9;
-  }
-
-  .tab-control{
-    /* position: sticky; */
-    top: 44px;
     z-index: 9;
   }
 
