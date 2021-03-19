@@ -9,12 +9,13 @@
             @scroll="contentScroll" 
             :pull-up-load="true"
             @pullingUp="loadMore">
-      <home-swiper :banners='banners'/>
+      <home-swiper :banners='banners' @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends='recommends'/>
       <feature-view/>
       <tab-control :titles="['流行','新款','精选']"
                     @tabClick="tabClick" 
-                    ref="tabControl"/>
+                    ref="tabControl"
+                    :class="{fixed:isTabFixed}"/>
       <goods-list :goods="showGoods"/>
     </scroll>
 
@@ -59,7 +60,8 @@ export default {
       },
       currentType:'pop',
       isShowBackTop:false,
-      tabOffsetTop:0
+      tabOffsetTop:0,
+      isTabFixed:false
     }
   },
   computed:{
@@ -77,8 +79,7 @@ export default {
     this.getHomeGoods('sell')
   },
   mounted(){
-    // 获取tabControl的offsetTop
-    console.log(this.$refs.tabControl.$el.offsetTop);
+    
   },
   methods:{
     // 事件监听相关的方法
@@ -99,10 +100,17 @@ export default {
       this.$refs.scroll && this.$refs.scroll.scrollTo(0,0);
     },
     contentScroll(position){
+      // 1.判断BackTop是否显示
       this.isShowBackTop= (-position.y) > 1000
+
+      // 2.决定tabControl是否吸顶(position:fixed)
+      this.isTabFixed=(-position.y)>this.tabOffsetTop;
     },
     loadMore(){
       this.getHomeGoods(this.currentType);
+    },
+    swiperImageLoad(){
+      this.tabOffsetTop=this.$refs.tabControl.$el.offsetTop;
     },
 
     // 网络请求相关的方法
@@ -145,5 +153,12 @@ export default {
   .content{
     height: calc(100% - 49px);
     overflow: hidden;
+  }
+
+  .fixed{
+    position:fixed;
+    left:0;
+    right:0;
+    top:44px;
   }
 </style>
