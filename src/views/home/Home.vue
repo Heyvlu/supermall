@@ -3,6 +3,10 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control :titles="['流行','新款','精选']"
+                  @tabClick="tabClick" 
+                  ref="tabControl1"
+                  v-show="isTabFixed"/>
     <scroll class="content" 
             ref="scroll" 
             :probe-type="3" 
@@ -14,8 +18,7 @@
       <feature-view/>
       <tab-control :titles="['流行','新款','精选']"
                     @tabClick="tabClick" 
-                    ref="tabControl"
-                    :class="{fixed:isTabFixed}"/>
+                    ref="tabControl2"/>
       <goods-list :goods="showGoods"/>
     </scroll>
 
@@ -61,13 +64,23 @@ export default {
       currentType:'pop',
       isShowBackTop:false,
       tabOffsetTop:0,
-      isTabFixed:false
+      isTabFixed:false,
+      saveY:0
     }
   },
   computed:{
     showGoods(){
       return this.goods[this.currentType].list;
     }
+  },
+  destroyed(){
+    console.log("home destroyed");
+  },
+  activated(){
+    this.$refs.scroll.scrollTo(0,this.saveY,100);
+  },
+  deactivated(){
+    this.saveY=this.$refs.scroll.getScrollY();
   },
   created(){
     // 1.请求多个数据
@@ -95,6 +108,8 @@ export default {
           this.currentType="sell";
           break;
       }
+      this.$refs.tabControl1.currentIndex=index;
+      this.$refs.tabControl2.currentIndex=index;
     },
     backClick(){
       this.$refs.scroll && this.$refs.scroll.scrollTo(0,0);
@@ -110,7 +125,7 @@ export default {
       this.getHomeGoods(this.currentType);
     },
     swiperImageLoad(){
-      this.tabOffsetTop=this.$refs.tabControl.$el.offsetTop;
+      this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop;
     },
 
     // 网络请求相关的方法
@@ -135,7 +150,7 @@ export default {
 
 <style scoped>
   #home{
-    padding-top: 44px;
+    /* padding-top: 44px; */
     height: 100vh;
   }
 
@@ -143,22 +158,15 @@ export default {
     background-color:var(--color-tint);
     color: #fff;
 
-    position: fixed;
+    /* position: fixed;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 9;
+    z-index: 9; */
   }
 
   .content{
     height: calc(100% - 49px);
     overflow: hidden;
-  }
-
-  .fixed{
-    position:fixed;
-    left:0;
-    right:0;
-    top:44px;
   }
 </style>
