@@ -1,26 +1,43 @@
 <template>
   <div id="detail">
-    <detail-nav-bar/>
-    <detail-swiper :top-images="topImages"/>
+    <detail-nav-bar class="detail-nav"/>
+    <scroll class="content">
+      <detail-swiper :top-images="topImages"/>
+      <detail-base-info :goods="goods"/>
+      <detail-shop-info :shop="shop"/>
+      <detail-goods-info :detail-info="detailInfo"/>
+    </scroll>
   </div>
 </template>
 
 <script>
   import DetailNavBar from './childComps/DetailNavBar'
   import DetailSwiper from './childComps/DetailSwiper'
+  import DetailBaseInfo from './childComps/DetailBaseInfo.vue'
+  import DetailShopInfo from './childComps/DetailShopInfo'
+  import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 
-  import {getDetail} from 'network/detail.js'
+  import Scroll from 'components/common/scroll/Scroll'
+
+  import {getDetail,Goods,Shop} from 'network/detail.js'
 
   export default{
     name:"Detail",
     components:{
       DetailNavBar,
-      DetailSwiper
+      DetailSwiper,
+      DetailBaseInfo,
+      DetailShopInfo,
+      Scroll,
+      DetailGoodsInfo
     },
     data(){
       return {
         iid:null,
-        topImages:[]
+        topImages:[],
+        goods:{},
+        shop:{},
+        detailInfo:{}
       }
     },
     created(){
@@ -31,12 +48,37 @@
       getDetail(this.iid).then(res=>{
         console.log(res);
         // 1.获取顶部的图片轮播数据
-        this.topImages=res.data.result.itemInfo.topImages;
-      })
+        const data=res.data.result;
+        this.topImages=data.itemInfo.topImages;
+      
+        // 2.获取商品信息
+        this.goods=new Goods(data.itemInfo,data.columns,data.shopInfo.services);
+      
+        // 3.创建店铺信息的对象
+        this.shop=new Shop(data.shopInfo);
+
+        // 4.保存商品的详情数据
+        this.detailInfo=data.detailInfo;
+      });
     }
   }
 </script>
 
 <style scoped>
+  #detail{
+    position:relative;
+    z-index: 9;
+    background-color: #fff;
+    height: 100vh;
+  }
 
+  .detail-nav{
+    position: relative;
+    z-index: 9;
+    background-color: #fff;
+  }
+
+  .content{
+    height: calc(100% - 44px);
+  }
 </style>
