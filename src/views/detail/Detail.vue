@@ -1,11 +1,14 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"/>
-    <scroll class="content">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
+    <scroll class="content" ref="scroll">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
       <detail-goods-info :detail-info="detailInfo"/>
+      <detail-param-info ref="params" :param-info="paramInfo"/>
+      <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+      <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
   </div>
 </template>
@@ -16,10 +19,13 @@
   import DetailBaseInfo from './childComps/DetailBaseInfo.vue'
   import DetailShopInfo from './childComps/DetailShopInfo'
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
+  import DetailParamInfo from './childComps/DetailParamInfo'
+  import DetailCommentInfo from './childComps/DetailCommentInfo'
 
   import Scroll from 'components/common/scroll/Scroll'
 
-  import {getDetail,Goods,Shop} from 'network/detail.js'
+  import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail.js'
+  import GoodsList from 'components/content/goods/GoodsList'
 
   export default{
     name:"Detail",
@@ -29,7 +35,10 @@
       DetailBaseInfo,
       DetailShopInfo,
       Scroll,
-      DetailGoodsInfo
+      DetailGoodsInfo,
+      DetailParamInfo,
+      DetailCommentInfo,
+      GoodsList
     },
     data(){
       return {
@@ -37,7 +46,11 @@
         topImages:[],
         goods:{},
         shop:{},
-        detailInfo:{}
+        detailInfo:{},
+        paramInfo:{},
+        commentInfo:{},
+        recommends:[],
+        themeTopYs:[]
       }
     },
     created(){
@@ -46,7 +59,7 @@
 
       // 2.根据iid请求详情数据
       getDetail(this.iid).then(res=>{
-        console.log(res);
+        // console.log(res);
         // 1.获取顶部的图片轮播数据
         const data=res.data.result;
         this.topImages=data.itemInfo.topImages;
@@ -59,7 +72,35 @@
 
         // 4.保存商品的详情数据
         this.detailInfo=data.detailInfo;
+
+        // 5.获取参数信息
+        this.paramInfo=new GoodsParam(data.itemParams.info,data.itemParams.rule);
+      
+        // 6.取出评论的信息
+        if(data.rate.cRate !==0){
+          this.commentInfo=data.rate.list[0];
+        }
+
+        this.$nextTick(()=>{
+          this.themeTopYs=[];
+      
+          this.themeTopYs.push(0);
+          this.themeTopYs.push(this.$refs.params.$el.offsetTop -44);
+          this.themeTopYs.push(this.$refs.comment.$el.offsetTop -44);
+          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop -44);
+          console.log(this.themeTopYs);
+        })
       });
+
+      // 3.请求推荐数据
+      getRecommend().then(res=>{
+        this.recommends=res.data.data.list;
+      })
+    },
+    methods:{
+      titleClick(index){
+        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],200)
+      }
     }
   }
 </script>
