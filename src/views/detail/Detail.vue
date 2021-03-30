@@ -10,7 +10,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
-    <detail-bottom-bar/>
+    <detail-bottom-bar @addCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
@@ -90,17 +90,8 @@
           this.commentInfo=data.rate.list[0];
         }
 
-        this.$nextTick(()=>{
-          // 根据最新的数据，对应的DOM是已经被渲染出来
-          // 但是图片依然是没有加载完
-          // this.themeTopYs=[];
-      
-          // this.themeTopYs.push(0);
-          // this.themeTopYs.push(this.$refs.params.$el.offsetTop -44);
-          // this.themeTopYs.push(this.$refs.comment.$el.offsetTop -44);
-          // this.themeTopYs.push(this.$refs.recommend.$el.offsetTop -44);
-          // console.log(this.themeTopYs);
-        })
+        // this.$nextTick(()=>{
+        // })
       });
 
       // 3.请求推荐数据
@@ -115,7 +106,6 @@
         this.themeTopYs.push(this.$refs.params.$el.offsetTop -44);
         this.themeTopYs.push(this.$refs.comment.$el.offsetTop -44);
         this.themeTopYs.push(this.$refs.recommend.$el.offsetTop -44);
-        console.log(this.themeTopYs);
       },100)
     },
     methods:{
@@ -145,6 +135,18 @@
 
         // 3.是否显示回到顶部
         this.listenShowBackTop(position);
+      },
+      addToCart(){
+        // 1.获取购物车需要展示的信息
+        const product={};
+        product.image=this.topImages[0];
+        product.title=this.goods.title;
+        product.desc=this.goods.desc;
+        product.price=this.goods.realPrice;
+        product.iid=this.iid;
+
+        // 2.将商品添加到购物车里
+        this.$store.dispatch('addCart',product);
       }
     }
   }
