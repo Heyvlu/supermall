@@ -26,9 +26,9 @@
   import DetailBottomBar from './childComps/DetailBottomBar'
 
   import Scroll from 'components/common/scroll/Scroll'
+  import GoodsList from 'components/content/goods/GoodsList'
 
   import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail.js'
-  import GoodsList from 'components/content/goods/GoodsList'
   import {debounce} from 'common/utils'
   import {backTopMixin} from 'common/mixin'
 
@@ -146,7 +146,9 @@
         product.iid=this.iid;
 
         // 2.将商品添加到购物车里
-        this.$store.dispatch('addCart',product);
+        this.$store.dispatch('addCart',product).then(res=>{
+          this.$toast.show(res,2000);
+        })
       }
     }
   }
