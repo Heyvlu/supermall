@@ -54,6 +54,10 @@
     flex: 1;
   }
 
+  .bar-left{
+    padding-top: 2px;
+  }
+
   .bar-left .text {
     font-size: 13px;
   }
@@ -61,17 +65,17 @@
   .bar-left .icon {
     display: block;
     width: 22px;
-    height: 22px;
-    margin: 6px auto 3px;
+    height: 21px;
+    margin-left: 15px;
     background: url("~assets/img/detail/detail_bottom.png") 0 0/100%;
   }
 
   .bar-left .serve {
-    background-position:0 -53px;
+    background-position:0 -63px;
   }
 
   .bar-left .shop {
-    background-position:0 -98px;
+    background-position:0 -117px;
   }
 
   .bar-right {
